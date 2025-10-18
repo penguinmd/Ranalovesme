@@ -146,6 +146,40 @@ class Database {
     `);
 
     console.log('Database schema initialized');
+
+    // Create default users (Rana and Mark) if they don't exist
+    await this.setupDefaultUsers();
+  }
+
+  async setupDefaultUsers() {
+    try {
+      const { hashPassword } = require('../utils/password');
+      const password = 'Gentoo12mdr!';
+      const hashedPassword = await hashPassword(password);
+
+      // Check and create Rana's account
+      const ranaExists = await this.get('SELECT id FROM users WHERE username = ?', ['rana']);
+      if (!ranaExists) {
+        await this.run(
+          'INSERT INTO users (username, password, display_name) VALUES (?, ?, ?)',
+          ['rana', hashedPassword, 'Rana']
+        );
+        console.log('✅ Created Rana\'s account');
+      }
+
+      // Check and create Mark's account
+      const markExists = await this.get('SELECT id FROM users WHERE username = ?', ['mark']);
+      if (!markExists) {
+        await this.run(
+          'INSERT INTO users (username, password, display_name) VALUES (?, ?, ?)',
+          ['mark', hashedPassword, 'Mark']
+        );
+        console.log('✅ Created Mark\'s account');
+      }
+    } catch (error) {
+      console.error('Error setting up default users:', error);
+      // Don't throw - let the app continue even if user setup fails
+    }
   }
 
   close() {

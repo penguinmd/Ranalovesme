@@ -7,39 +7,11 @@ const { registerValidator, loginValidator } = require('../validators/auth');
 const validate = require('../middleware/validate');
 const AppError = require('../utils/AppError');
 
-// Register (for initial setup - consider disabling in production)
-router.post('/register', registerValidator, validate, async (req, res, next) => {
-  try {
-    const { username, password, display_name } = req.body;
-
-    // Check if user already exists
-    const existingUser = await User.findByUsername(username);
-    if (existingUser) {
-      throw new AppError('Username already exists', 400);
-    }
-
-    const hashedPassword = await hashPassword(password);
-    const userId = await User.create({
-      username,
-      password: hashedPassword,
-      display_name
-    });
-
-    const user = await User.findById(userId);
-    const token = generateToken(user);
-
-    res.status(201).json({
-      message: 'User created successfully',
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        display_name: user.display_name
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
+// Registration disabled - only Rana and Mark have accounts
+router.post('/register', (req, res) => {
+  res.status(403).json({
+    message: 'Registration is disabled. This app is private to Rana and Mark.'
+  });
 });
 
 // Login
