@@ -13,10 +13,21 @@ class Database {
       console.log('Connected to SQLite database');
     });
 
-    // Promisify database methods
-    this.run = promisify(this.db.run.bind(this.db));
+    // Promisify database methods with custom wrapper for run to preserve lastID
     this.get = promisify(this.db.get.bind(this.db));
     this.all = promisify(this.db.all.bind(this.db));
+  }
+
+  run(sql, params = []) {
+    return new Promise((resolve, reject) => {
+      this.db.run(sql, params, function(err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ lastID: this.lastID, changes: this.changes });
+        }
+      });
+    });
   }
 
   async initialize() {
