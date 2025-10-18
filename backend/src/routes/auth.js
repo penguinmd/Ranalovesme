@@ -14,6 +14,19 @@ router.post('/register', (req, res) => {
   });
 });
 
+// Debug endpoint to check users (temporary - remove in production)
+router.get('/debug/users', async (req, res, next) => {
+  try {
+    const users = await User.getAll();
+    res.json({
+      count: users.length,
+      users: users.map(u => ({ id: u.id, username: u.username, display_name: u.display_name }))
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Login
 router.post('/login', loginValidator, validate, async (req, res, next) => {
   try {
