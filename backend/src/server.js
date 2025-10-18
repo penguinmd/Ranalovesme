@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const config = require('./config');
+// Railway deployment
 const db = require('./models/database');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 
