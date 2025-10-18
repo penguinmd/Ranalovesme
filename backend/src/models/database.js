@@ -1,16 +1,27 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 const { promisify } = require('util');
 
 class Database {
   constructor() {
-    const dbPath = path.join(__dirname, '../../data/ranalovesme.db');
+    // Use /tmp for Railway or local data directory
+    const dataDir = process.env.DATABASE_DIR || path.join(__dirname, '../../data');
+
+    // Ensure directory exists
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+
+    const dbPath = path.join(dataDir, 'ranalovesme.db');
+    console.log('Database path:', dbPath);
+
     this.db = new sqlite3.Database(dbPath, (err) => {
       if (err) {
         console.error('Database connection error:', err.message);
         throw err;
       }
-      console.log('Connected to SQLite database');
+      console.log('Connected to SQLite database at:', dbPath);
     });
 
     // Promisify database methods with custom wrapper for run to preserve lastID
