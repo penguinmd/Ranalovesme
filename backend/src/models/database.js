@@ -153,31 +153,36 @@ class Database {
 
   async setupDefaultUsers() {
     try {
-      const { hashPassword } = require('../utils/password');
+      const bcrypt = require('bcrypt');
       const password = 'Gentoo12mdr!';
-      const hashedPassword = await hashPassword(password);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       // Check and create Rana's account
       const ranaExists = await this.get('SELECT id FROM users WHERE username = ?', ['rana']);
       if (!ranaExists) {
-        await this.run(
+        const result = await this.run(
           'INSERT INTO users (username, password, display_name) VALUES (?, ?, ?)',
           ['rana', hashedPassword, 'Rana']
         );
-        console.log('✅ Created Rana\'s account');
+        console.log('✅ Created Rana\'s account (ID:', result.lastID, ')');
+      } else {
+        console.log('ℹ️  Rana\'s account already exists');
       }
 
       // Check and create Mark's account
       const markExists = await this.get('SELECT id FROM users WHERE username = ?', ['mark']);
       if (!markExists) {
-        await this.run(
+        const result = await this.run(
           'INSERT INTO users (username, password, display_name) VALUES (?, ?, ?)',
           ['mark', hashedPassword, 'Mark']
         );
-        console.log('✅ Created Mark\'s account');
+        console.log('✅ Created Mark\'s account (ID:', result.lastID, ')');
+      } else {
+        console.log('ℹ️  Mark\'s account already exists');
       }
     } catch (error) {
-      console.error('Error setting up default users:', error);
+      console.error('❌ Error setting up default users:', error.message);
+      console.error('Stack:', error.stack);
       // Don't throw - let the app continue even if user setup fails
     }
   }
