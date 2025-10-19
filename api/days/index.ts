@@ -12,16 +12,6 @@ export const config = {
 };
 
 async function handler(req: AuthRequest, res: VercelResponse) {
-  // Parse body if it's not already parsed (for POST/PUT)
-  if (req.method === 'POST' || req.method === 'PUT') {
-    if (typeof req.body === 'string') {
-      try {
-        req.body = JSON.parse(req.body);
-      } catch (e) {
-        return res.status(400).json({ message: 'Invalid JSON' });
-      }
-    }
-  }
   if (req.method === 'GET') {
     // Get all days or stats
     if (req.query.stats === 'true') {
@@ -64,7 +54,17 @@ async function handler(req: AuthRequest, res: VercelResponse) {
   if (req.method === 'POST') {
     // Create a new day
     try {
-      const { date, title, description, mood, rating } = req.body;
+      // Parse body if it's not already parsed
+      let body = req.body;
+      if (typeof body === 'string') {
+        try {
+          body = JSON.parse(body);
+        } catch (e) {
+          return res.status(400).json({ message: 'Invalid JSON' });
+        }
+      }
+
+      const { date, title, description, mood, rating } = body;
 
       if (!date) {
         return res.status(400).json({ message: 'Date is required' });

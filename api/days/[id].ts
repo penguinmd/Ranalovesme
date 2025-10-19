@@ -12,16 +12,6 @@ export const config = {
 };
 
 async function handler(req: AuthRequest, res: VercelResponse) {
-  // Parse body if it's not already parsed (for POST/PUT)
-  if (req.method === 'POST' || req.method === 'PUT') {
-    if (typeof req.body === 'string') {
-      try {
-        req.body = JSON.parse(req.body);
-      } catch (e) {
-        return res.status(400).json({ message: 'Invalid JSON' });
-      }
-    }
-  }
   const { id } = req.query;
 
   if (!id || Array.isArray(id)) {
@@ -50,7 +40,17 @@ async function handler(req: AuthRequest, res: VercelResponse) {
 
   if (req.method === 'PUT') {
     try {
-      const { title, description, mood, rating } = req.body;
+      // Parse body if it's not already parsed
+      let body = req.body;
+      if (typeof body === 'string') {
+        try {
+          body = JSON.parse(body);
+        } catch (e) {
+          return res.status(400).json({ message: 'Invalid JSON' });
+        }
+      }
+
+      const { title, description, mood, rating } = body;
 
       await sql`
         UPDATE days_together
