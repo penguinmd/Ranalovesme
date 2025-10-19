@@ -1,13 +1,32 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { initializeDatabase, setupDefaultUsers } from '../lib/db';
 
+// Ensure body parser is enabled
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+  },
+};
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
+  // Parse body if it's not already parsed
+  let body = req.body;
+  if (typeof body === 'string') {
+    try {
+      body = JSON.parse(body);
+    } catch (e) {
+      return res.status(400).json({ message: 'Invalid JSON in request body' });
+    }
+  }
+
   // Simple auth check - use a secret token
-  const { secret } = req.body;
+  const { secret } = body;
 
   // Debug logging
   console.log('Received secret:', secret?.substring(0, 10) + '...');

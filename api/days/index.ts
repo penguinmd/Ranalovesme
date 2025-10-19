@@ -2,7 +2,26 @@ import { VercelResponse } from '@vercel/node';
 import { AuthRequest, authenticateToken } from '../../lib/auth';
 import { sql } from '../../lib/db';
 
+// Ensure body parser is enabled
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+  },
+};
+
 async function handler(req: AuthRequest, res: VercelResponse) {
+  // Parse body if it's not already parsed (for POST/PUT)
+  if (req.method === 'POST' || req.method === 'PUT') {
+    if (typeof req.body === 'string') {
+      try {
+        req.body = JSON.parse(req.body);
+      } catch (e) {
+        return res.status(400).json({ message: 'Invalid JSON' });
+      }
+    }
+  }
   if (req.method === 'GET') {
     // Get all days or stats
     if (req.query.stats === 'true') {
