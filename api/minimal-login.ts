@@ -10,6 +10,7 @@ export const config = {
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Test minimal login endpoint
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
