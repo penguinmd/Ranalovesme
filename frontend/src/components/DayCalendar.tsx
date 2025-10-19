@@ -52,6 +52,16 @@ export const DayCalendar = ({ days, onQuickAdd, onDayClick }: DayCalendarProps) 
 
   return (
     <div className="day-calendar">
+      {/* Counter Display */}
+      <div className="mb-6 text-center">
+        <div className="inline-flex items-center justify-center bg-gradient-to-br from-primary-500 to-pink-500 text-white rounded-2xl px-8 py-6 shadow-lg">
+          <div>
+            <div className="text-6xl font-bold">{days.length}</div>
+            <div className="text-lg opacity-90 mt-1">Days Together</div>
+          </div>
+        </div>
+      </div>
+
       <style>{`
         .day-calendar .react-calendar {
           width: 100%;
@@ -112,9 +122,12 @@ export const DayCalendar = ({ days, onQuickAdd, onDayClick }: DayCalendarProps) 
         }
       `}</style>
 
-      <div className="mb-4">
-        <p className="text-sm text-gray-600">
-          Click any day to mark it as a day together. Click a marked day to view/edit details.
+      <div className="mb-4 text-center">
+        <p className="text-gray-700 font-medium">
+          Click any day to count it! 💕
+        </p>
+        <p className="text-sm text-gray-500 mt-1">
+          Click marked days anytime to add details
         </p>
       </div>
 
