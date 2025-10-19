@@ -32,7 +32,7 @@ export const Dashboard = () => {
         music,
         activities,
       ] = await Promise.all([
-        daysApi.getStats().catch(() => ({ total_days: 0, average_rating: 0 })),
+        daysApi.getStats().catch(() => ({ total_days: 0, average_rating: 0, first_day: null, latest_day: null })),
         daysApi.getAll().catch(() => []),
         placesApi.getAll().catch(() => []),
         photosApi.getAll().catch(() => []),

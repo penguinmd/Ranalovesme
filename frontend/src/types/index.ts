@@ -41,10 +41,10 @@ export interface Day {
 
 export interface DayFormData {
   date: string;
-  title: string;
-  description: string;
-  mood: string;
-  rating: number;
+  title?: string;
+  description?: string;
+  mood?: string;
+  rating?: number;
 }
 
 export interface DayStats {

@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
+import { DayCalendar } from '../components/DayCalendar';
 import { daysApi } from '../lib/api';
 import type { Day } from '../types';
 import { format } from 'date-fns';
 
+type ViewMode = 'calendar' | 'list';
+
 export const Days = () => {
+  const navigate = useNavigate();
   const [days, setDays] = useState<Day[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<ViewMode>('calendar');
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     date: '',
@@ -50,6 +55,20 @@ export const Days = () => {
     }
   };
 
+  const handleQuickAdd = async (date: Date) => {
+    try {
+      const dateStr = format(date, 'yyyy-MM-dd');
+      await daysApi.create({ date: dateStr });
+      loadDays();
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Failed to add day');
+    }
+  };
+
+  const handleDayClick = (day: Day) => {
+    navigate(`/days/${day.id}`);
+  };
+
   const moodOptions = ['😊', '😍', '🥰', '😄', '😎', '🤗', '💕', '❤️', '🌟', '✨'];
 
   if (isLoading) {
@@ -71,12 +90,36 @@ export const Days = () => {
             <h1 className="text-3xl font-bold text-gray-900">Days Together</h1>
             <p className="text-gray-600 mt-1">{days.length} memorable days</p>
           </div>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="btn-primary"
-          >
-            {showForm ? 'Cancel' : '+ Add Day'}
-          </button>
+          <div className="flex items-center space-x-3">
+            <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1">
+              <button
+                onClick={() => setViewMode('calendar')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'calendar'
+                    ? 'bg-primary-100 text-primary-700'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                📅 Calendar
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-primary-100 text-primary-700'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                📋 List
+              </button>
+            </div>
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="btn-primary"
+            >
+              {showForm ? 'Cancel' : '+ Add Details'}
+            </button>
+          </div>
         </div>
 
         {/* Add Day Form */}
@@ -176,46 +219,61 @@ export const Days = () => {
           </div>
         )}
 
-        {/* Days List */}
-        {days.length === 0 ? (
-          <div className="card text-center py-12">
-            <div className="text-6xl mb-4">📅</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">No Days Yet</h2>
-            <p className="text-gray-600 mb-6">Start recording your memorable days together</p>
-            <button onClick={() => setShowForm(true)} className="btn-primary">
-              Add Your First Day
-            </button>
+        {/* Calendar View */}
+        {viewMode === 'calendar' && (
+          <div className="card">
+            <DayCalendar
+              days={days}
+              onQuickAdd={handleQuickAdd}
+              onDayClick={handleDayClick}
+            />
           </div>
-        ) : (
-          <div className="grid gap-4">
-            {days.map((day) => (
-              <Link
-                key={day.id}
-                to={`/days/${day.id}`}
-                className="card hover:shadow-lg transition-shadow"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <span className="text-4xl">{day.mood}</span>
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-900">{day.title}</h3>
-                        <p className="text-sm text-gray-500">
-                          {format(new Date(day.date), 'EEEE, MMMM dd, yyyy')}
-                        </p>
+        )}
+
+        {/* List View */}
+        {viewMode === 'list' && (
+          <>
+            {days.length === 0 ? (
+              <div className="card text-center py-12">
+                <div className="text-6xl mb-4">📅</div>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-2">No Days Yet</h2>
+                <p className="text-gray-600 mb-6">Start recording your memorable days together</p>
+                <button onClick={() => setShowForm(true)} className="btn-primary">
+                  Add Your First Day
+                </button>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {days.map((day) => (
+                  <Link
+                    key={day.id}
+                    to={`/days/${day.id}`}
+                    className="card hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <span className="text-4xl">{day.mood}</span>
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-900">{day.title}</h3>
+                            <p className="text-sm text-gray-500">
+                              {format(new Date(day.date), 'EEEE, MMMM dd, yyyy')}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-gray-700 line-clamp-2">{day.description}</p>
+                      </div>
+                      <div className="ml-4 text-right">
+                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary-100 text-primary-700 font-medium">
+                          ⭐ {day.rating}/10
+                        </div>
                       </div>
                     </div>
-                    <p className="text-gray-700 line-clamp-2">{day.description}</p>
-                  </div>
-                  <div className="ml-4 text-right">
-                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary-100 text-primary-700 font-medium">
-                      ⭐ {day.rating}/10
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </Layout>
