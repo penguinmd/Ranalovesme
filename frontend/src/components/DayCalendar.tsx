@@ -40,13 +40,8 @@ export const DayCalendar = ({ days, onQuickAdd, onDayClick }: DayCalendarProps) 
     return '';
   };
 
-  const tileContent = ({ date }: { date: Date }) => {
-    const dateStr = format(date, 'yyyy-MM-dd');
-    const day = daysMap.get(dateStr);
-
-    if (day?.mood) {
-      return <div className="day-mood">{day.mood}</div>;
-    }
+  const tileContent = () => {
+    // No longer showing mood emojis
     return null;
   };
 

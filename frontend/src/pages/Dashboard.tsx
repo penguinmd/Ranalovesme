@@ -86,11 +86,6 @@ export const Dashboard = () => {
               </div>
               <div className="text-4xl">📅</div>
             </div>
-            {stats?.average_rating && (
-              <p className="text-sm mt-2 opacity-90">
-                Avg Rating: {stats.average_rating.toFixed(1)}/10
-              </p>
-            )}
           </div>
 
           <div className="card bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
@@ -142,15 +137,13 @@ export const Dashboard = () => {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-medium text-gray-900">{day.title}</h3>
-                        <span className="text-2xl">{day.mood}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{day.description}</p>
+                      <h3 className="font-medium text-gray-900">{day.title || 'Day Together'}</h3>
+                      {day.description && (
+                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{day.description}</p>
+                      )}
                     </div>
                     <div className="text-right ml-4">
                       <p className="text-sm text-gray-500">{format(new Date(day.date), 'MMM dd, yyyy')}</p>
-                      <p className="text-sm font-medium text-primary-600">Rating: {day.rating}/10</p>
                     </div>
                   </div>
                 </Link>
