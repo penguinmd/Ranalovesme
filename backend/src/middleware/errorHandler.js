@@ -21,11 +21,9 @@ const errorHandler = (err, req, res, next) => {
     } else {
       // Programming or unknown errors
       console.error('ERROR:', err);
-      // Temporary: show error details for debugging
       res.status(500).json({
         status: 'error',
-        message: err.message,
-        error: process.env.DEBUG_ERRORS ? err.stack : 'Something went wrong'
+        message: 'Something went wrong'
       });
     }
   }
