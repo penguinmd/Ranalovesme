@@ -46,11 +46,17 @@ async function handler(req: AuthRequest, res: VercelResponse) {
         try {
           body = JSON.parse(body);
         } catch (e) {
-          return res.status(400).json({ message: 'Invalid JSON' });
+          console.error('JSON parse error in PUT:', e);
+          return res.status(400).json({ message: 'Invalid JSON', error: String(e) });
         }
       }
 
+      console.log('PUT - Received body:', JSON.stringify(body));
+      console.log('PUT - Day ID:', dayId);
+
       const { title, description, mood, rating } = body;
+
+      console.log('PUT - Parsed fields:', { title, description, mood, rating });
 
       await sql`
         UPDATE days_together
@@ -62,10 +68,21 @@ async function handler(req: AuthRequest, res: VercelResponse) {
         WHERE id = ${dayId}
       `;
 
+      console.log('PUT - Update successful for day', dayId);
       return res.status(200).json({ message: 'Day updated successfully' });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Update day error:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        detail: error.detail,
+        stack: error.stack
+      });
+      return res.status(500).json({
+        message: 'Internal server error',
+        error: error.message,
+        detail: error.detail
+      });
     }
   }
 

@@ -60,15 +60,27 @@ async function handler(req: AuthRequest, res: VercelResponse) {
         try {
           body = JSON.parse(body);
         } catch (e) {
-          return res.status(400).json({ message: 'Invalid JSON' });
+          console.error('JSON parse error:', e);
+          return res.status(400).json({ message: 'Invalid JSON', error: String(e) });
         }
       }
 
+      console.log('Received body:', JSON.stringify(body));
+      console.log('Body type:', typeof body);
+
       const { date, title, description, mood, rating } = body;
 
+      console.log('Parsed fields:', { date, title, description, mood, rating });
+
       if (!date) {
-        return res.status(400).json({ message: 'Date is required' });
+        return res.status(400).json({
+          message: 'Date is required',
+          receivedBody: body,
+          dateValue: date
+        });
       }
+
+      console.log('About to insert into database:', { date, title, description, mood, rating, created_by: req.user!.id });
 
       const result = await sql`
         INSERT INTO days_together (date, title, description, mood, rating, created_by)
@@ -76,13 +88,24 @@ async function handler(req: AuthRequest, res: VercelResponse) {
         RETURNING id
       `;
 
+      console.log('Insert successful, returning:', result.rows[0]);
       return res.status(201).json({ id: result.rows[0].id, message: 'Day created successfully' });
     } catch (error: any) {
       console.error('Create day error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        detail: error.detail,
+        stack: error.stack
+      });
       if (error.message?.includes('unique') || error.message?.includes('duplicate')) {
-        return res.status(400).json({ message: 'A day already exists for this date' });
+        return res.status(400).json({ message: 'A day already exists for this date', error: error.message });
       }
-      return res.status(500).json({ message: 'Internal server error' });
+      return res.status(500).json({
+        message: 'Internal server error',
+        error: error.message,
+        detail: error.detail
+      });
     }
   }
 
