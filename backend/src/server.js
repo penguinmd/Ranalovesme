@@ -47,6 +47,15 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
 
+// Debug endpoint to check CORS config
+app.get('/api/debug/config', (req, res) => {
+  res.json({
+    nodeEnv: config.nodeEnv,
+    allowedOrigins: config.allowedOrigins,
+    allowedOriginsRaw: process.env.ALLOWED_ORIGINS || 'not set'
+  });
+});
+
 // 404 handler
 app.use(notFound);
 
