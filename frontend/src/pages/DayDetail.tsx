@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Layout } from '../components/Layout';
-import { daysApi } from '../lib/api';
+import { daysApi, photosApi } from '../lib/api';
 import type { Day, Photo } from '../types';
 import { format } from 'date-fns';
 
@@ -222,7 +222,7 @@ export const DayDetail = () => {
               {photos.map((photo) => (
                 <div key={photo.id} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
                   <img
-                    src={`http://localhost:3001/uploads/${photo.filename}`}
+                    src={photosApi.getUrl(photo.filename)}
                     alt={photo.caption}
                     className="w-full h-full object-cover hover:scale-110 transition-transform"
                   />
