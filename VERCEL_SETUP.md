@@ -22,7 +22,7 @@ This guide will help you migrate your RanaLovesMe app from Railway to Vercel wit
 
 6. **Click "Create"**
 
-7. **Connect to your project**: Select your `Ranalovesme` project
+7. **Connect to your project**: Select your `ranalovesme` project
 
 Vercel will automatically add these environment variables to your project:
 - `POSTGRES_URL`
@@ -43,7 +43,7 @@ Vercel will automatically add these environment variables to your project:
 
 4. **Click "Create"**
 
-5. **Connect to your project**: Select your `Ranalovesme` project
+5. **Connect to your project**: Select your `ranalovesme` project
 
 Vercel will automatically add:
 - `BLOB_READ_WRITE_TOKEN`

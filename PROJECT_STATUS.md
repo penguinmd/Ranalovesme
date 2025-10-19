@@ -10,9 +10,9 @@ RanaLovesMe is a relationship memory tracker app that has been successfully migr
 
 **Live URL:** https://frontend-pi-five-87.vercel.app
 
-**Vercel Project Name:** `frontend`
+**Vercel Project Name:** `ranalovesme`
 
-**Repository:** https://github.com/penguinmd/Ranalovesme
+**Repository:** https://github.com/penguinmd/ranalovesme
 
 ## What's Working ✅
 
@@ -49,7 +49,7 @@ RanaLovesMe is a relationship memory tracker app that has been successfully migr
 - Logs will show exact request body and where parsing fails
 
 **Next Steps to Debug:**
-1. Check Vercel function logs at: Vercel Dashboard → frontend project → Deployments → Latest → Functions → `/api/days/index`
+1. Check Vercel function logs at: Vercel Dashboard → ranalovesme project → Deployments → Latest → Functions → `/api/days/index`
 2. Look for console.log output showing:
    - Received body
    - Parsed fields
@@ -87,7 +87,7 @@ All environment variables are configured in Vercel project settings:
 - `JWT_SECRET` - Used for JWT token generation/verification
 - `INIT_SECRET` - Used for database initialization (already used, can be kept for reference)
 
-**To view/edit:** Vercel Dashboard → frontend project → Settings → Environment Variables
+**To view/edit:** Vercel Dashboard → ranalovesme project → Settings → Environment Variables
 
 ## Architecture
 
@@ -200,7 +200,7 @@ Vercel automatically deploys when you push to the `master` branch. Deployment ta
 
 ### 3. Verify Deployment
 - Check Vercel dashboard: https://vercel.com/dashboard
-- Look for the latest deployment under the "frontend" project
+- Look for the latest deployment under the "ranalovesme" project
 - Click on the deployment to see build logs and function logs
 
 ### 4. Test Changes
@@ -217,7 +217,7 @@ Vercel automatically deploys when you push to the `master` branch. Deployment ta
 
 ### Backend Errors
 1. Go to Vercel Dashboard: https://vercel.com/dashboard
-2. Click on "frontend" project
+2. Click on "ranalovesme" project
 3. Click "Deployments"
 4. Click on the latest deployment
 5. Click "Functions" tab
