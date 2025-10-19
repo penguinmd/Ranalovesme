@@ -3,6 +3,15 @@ import bcrypt from 'bcrypt';
 import { sql } from '../../lib/db';
 import { generateToken } from '../../lib/auth';
 
+// Ensure body parser is enabled
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+  },
+};
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
