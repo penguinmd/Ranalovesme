@@ -16,9 +16,8 @@ import type {
   ActivityFormData,
 } from '../types';
 
-const API_BASE_URL = import.meta.env.PROD
-  ? 'https://ranalovesme-production.up.railway.app/api'
-  : 'http://localhost:3001/api';
+// API is now on the same domain via Vercel serverless functions
+const API_BASE_URL = '/api';
 
 // Create axios instance
 const api = axios.create({
@@ -187,10 +186,8 @@ export const photosApi = {
   },
 
   getUrl: (filename: string): string => {
-    const baseUrl = import.meta.env.PROD
-      ? 'https://ranalovesme-production.up.railway.app'
-      : 'http://localhost:3001';
-    return `${baseUrl}/uploads/${filename}`;
+    // Filename is now the full Vercel Blob URL
+    return filename;
   },
 };
 

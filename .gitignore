@@ -50,3 +50,8 @@ coverage/
 # Temporary
 tmp/
 temp/
+
+
+# Vercel
+.vercel
+.env*.local
