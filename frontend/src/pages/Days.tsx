@@ -6,6 +6,7 @@ import { daysApi } from '../lib/api';
 import type { Day } from '../types';
 import { format } from 'date-fns';
 
+// Days page with calendar and list views
 type ViewMode = 'calendar' | 'list';
 
 export const Days = () => {
