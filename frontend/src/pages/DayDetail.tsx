@@ -15,8 +15,6 @@ export const DayDetail = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    mood: '',
-    rating: 8,
   });
 
   useEffect(() => {
@@ -34,10 +32,8 @@ export const DayDetail = () => {
       setDay(dayData);
       setPhotos(photosData);
       setFormData({
-        title: dayData.title,
-        description: dayData.description,
-        mood: dayData.mood,
-        rating: dayData.rating,
+        title: dayData.title || '',
+        description: dayData.description || '',
       });
     } catch (error) {
       console.error('Failed to load day:', error);
@@ -71,7 +67,6 @@ export const DayDetail = () => {
     }
   };
 
-  const moodOptions = ['😊', '😍', '🥰', '😄', '😎', '🤗', '💕', '❤️', '🌟', '✨'];
 
   if (isLoading) {
     return (
@@ -123,64 +118,27 @@ export const DayDetail = () => {
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
+                  Title <span className="text-gray-400 text-xs">(optional)</span>
                 </label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="input-field"
-                  required
+                  placeholder="A day at the park..."
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mood
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {moodOptions.map((mood) => (
-                    <button
-                      key={mood}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, mood })}
-                      className={`text-3xl p-2 rounded-lg transition-all ${
-                        formData.mood === mood
-                          ? 'bg-primary-100 ring-2 ring-primary-500'
-                          : 'hover:bg-gray-100'
-                      }`}
-                    >
-                      {mood}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Rating (1-10)
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={formData.rating}
-                  onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })}
-                  className="input-field"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                  Description <span className="text-gray-400 text-xs">(optional)</span>
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="input-field"
                   rows={6}
-                  required
+                  placeholder="What made this day special..."
                 />
               </div>
 
@@ -196,21 +154,19 @@ export const DayDetail = () => {
           </div>
         ) : (
           <div className="card">
-            <div className="flex items-start space-x-4 mb-6">
-              <span className="text-6xl">{day.mood}</span>
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{day.title}</h1>
-                <p className="text-gray-600">
-                  {format(new Date(day.date), 'EEEE, MMMM dd, yyyy')}
-                </p>
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary-100 text-primary-700 font-medium mt-2">
-                  ⭐ {day.rating}/10
-                </div>
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {day.title || 'Day Together'}
+              </h1>
+              <p className="text-gray-600">
+                {format(new Date(day.date), 'EEEE, MMMM dd, yyyy')}
+              </p>
+            </div>
+            {day.description && (
+              <div className="prose max-w-none">
+                <p className="text-gray-800 whitespace-pre-wrap">{day.description}</p>
               </div>
-            </div>
-            <div className="prose max-w-none">
-              <p className="text-gray-800 whitespace-pre-wrap">{day.description}</p>
-            </div>
+            )}
           </div>
         )}
 
