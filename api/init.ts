@@ -8,8 +8,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Simple auth check - use a secret token
   const { secret } = req.body;
+
+  // Debug logging
+  console.log('Received secret:', secret?.substring(0, 10) + '...');
+  console.log('Expected secret:', process.env.INIT_SECRET?.substring(0, 10) + '...');
+  console.log('Secrets match:', secret === process.env.INIT_SECRET);
+  console.log('Body type:', typeof req.body);
+  console.log('Body keys:', Object.keys(req.body || {}));
+
   if (secret !== process.env.INIT_SECRET) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({
+      message: 'Unauthorized',
+      debug: {
+        receivedLength: secret?.length,
+        expectedLength: process.env.INIT_SECRET?.length,
+        receivedPreview: secret?.substring(0, 10),
+        expectedPreview: process.env.INIT_SECRET?.substring(0, 10)
+      }
+    });
   }
 
   try {
