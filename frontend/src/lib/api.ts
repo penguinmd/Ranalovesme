@@ -187,7 +187,10 @@ export const photosApi = {
   },
 
   getUrl: (filename: string): string => {
-    return `http://localhost:3001/uploads/${filename}`;
+    const baseUrl = import.meta.env.PROD
+      ? 'https://ranalovesme-production.up.railway.app'
+      : 'http://localhost:3001';
+    return `${baseUrl}/uploads/${filename}`;
   },
 };
 

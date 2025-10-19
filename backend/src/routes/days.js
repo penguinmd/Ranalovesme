@@ -6,12 +6,21 @@ const { createDayValidator, updateDayValidator, dayIdValidator } = require('../v
 const validate = require('../middleware/validate');
 const AppError = require('../utils/AppError');
 
-// Get all days with statistics
+// Get stats (must be before /:id route)
+router.get('/stats', authenticateToken, async (req, res, next) => {
+  try {
+    const stats = await Day.getStats();
+    res.json(stats);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get all days
 router.get('/', authenticateToken, async (req, res, next) => {
   try {
     const days = await Day.getAll();
-    const stats = await Day.getStats();
-    res.json({ days, stats });
+    res.json(days);
   } catch (error) {
     next(error);
   }

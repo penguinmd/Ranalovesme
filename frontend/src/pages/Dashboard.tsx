@@ -32,23 +32,23 @@ export const Dashboard = () => {
         music,
         activities,
       ] = await Promise.all([
-        daysApi.getStats(),
-        daysApi.getAll(),
-        placesApi.getAll(),
-        photosApi.getAll(),
-        musicApi.getAll(),
-        activitiesApi.getAll(),
+        daysApi.getStats().catch(() => ({ total_days: 0, average_rating: 0 })),
+        daysApi.getAll().catch(() => []),
+        placesApi.getAll().catch(() => []),
+        photosApi.getAll().catch(() => []),
+        musicApi.getAll().catch(() => []),
+        activitiesApi.getAll().catch(() => []),
       ]);
 
       setStats(dayStats);
-      setRecentDays(days.slice(0, 5));
-      setRecentPlaces(places.slice(0, 5));
-      setRecentPhotos(photos.slice(0, 6));
+      setRecentDays(Array.isArray(days) ? days.slice(0, 5) : []);
+      setRecentPlaces(Array.isArray(places) ? places.slice(0, 5) : []);
+      setRecentPhotos(Array.isArray(photos) ? photos.slice(0, 6) : []);
       setCounts({
-        places: places.length,
-        photos: photos.length,
-        music: music.length,
-        activities: activities.length,
+        places: Array.isArray(places) ? places.length : 0,
+        photos: Array.isArray(photos) ? photos.length : 0,
+        music: Array.isArray(music) ? music.length : 0,
+        activities: Array.isArray(activities) ? activities.length : 0,
       });
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
@@ -200,7 +200,7 @@ export const Dashboard = () => {
                 {recentPhotos.map((photo) => (
                   <div key={photo.id} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
                     <img
-                      src={`http://localhost:3001/uploads/${photo.filename}`}
+                      src={photosApi.getUrl(photo.filename)}
                       alt={photo.caption}
                       className="w-full h-full object-cover hover:scale-110 transition-transform"
                     />
