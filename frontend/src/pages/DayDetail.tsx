@@ -15,6 +15,7 @@ export const DayDetail = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    photo: null as File | null,
   });
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export const DayDetail = () => {
       setFormData({
         title: dayData.title || '',
         description: dayData.description || '',
+        photo: null,
       });
     } catch (error) {
       console.error('Failed to load day:', error);
@@ -47,7 +49,22 @@ export const DayDetail = () => {
     if (!id) return;
 
     try {
-      await daysApi.update(parseInt(id), formData);
+      // Update the day text fields
+      await daysApi.update(parseInt(id), {
+        title: formData.title || undefined,
+        description: formData.description || undefined,
+      });
+
+      // If there's a new photo, upload it and link it to the day
+      if (formData.photo) {
+        const uploadedPhoto = await photosApi.upload(formData.photo, {
+          caption: formData.title || 'Day together',
+          location: '',
+          taken_date: day?.date || '',
+        });
+        await daysApi.addPhoto(parseInt(id), uploadedPhoto.id);
+      }
+
       setIsEditing(false);
       loadDay(parseInt(id));
     } catch (error: any) {
@@ -142,6 +159,21 @@ export const DayDetail = () => {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Add Photo <span className="text-gray-400 text-xs">(optional)</span>
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setFormData({ ...formData, photo: e.target.files?.[0] || null })}
+                  className="input-field"
+                />
+                {formData.photo && (
+                  <p className="text-sm text-gray-600 mt-1">Selected: {formData.photo.name}</p>
+                )}
+              </div>
+
               <div className="flex justify-end space-x-3">
                 <button type="button" onClick={() => setIsEditing(false)} className="btn-secondary">
                   Cancel
@@ -154,6 +186,17 @@ export const DayDetail = () => {
           </div>
         ) : (
           <div className="card">
+            {/* Main photo if exists */}
+            {photos.length > 0 && (
+              <div className="mb-6 rounded-lg overflow-hidden">
+                <img
+                  src={photosApi.getUrl(photos[0].filename)}
+                  alt={photos[0].caption}
+                  className="w-full max-h-96 object-cover"
+                />
+              </div>
+            )}
+
             <div className="mb-6">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {day.title || 'Day Together'}
@@ -170,10 +213,10 @@ export const DayDetail = () => {
           </div>
         )}
 
-        {/* Photos */}
-        {photos.length > 0 && (
+        {/* Additional Photos (only show if more than 1) */}
+        {photos.length > 1 && (
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">Photos</h2>
+            <h2 className="text-xl font-semibold mb-4">All Photos ({photos.length})</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {photos.map((photo) => (
                 <div key={photo.id} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">

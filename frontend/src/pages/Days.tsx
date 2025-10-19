@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { DayCalendar } from '../components/DayCalendar';
-import { daysApi } from '../lib/api';
+import { daysApi, photosApi } from '../lib/api';
 import type { Day } from '../types';
 import { format } from 'date-fns';
 
@@ -40,13 +40,25 @@ export const Days = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Create form data without photo for now (just the text fields)
+      // Create the day first
       const dayData = {
         date: formData.date,
         title: formData.title || undefined,
         description: formData.description || undefined,
       };
-      await daysApi.create(dayData);
+      const response = await daysApi.create(dayData);
+      const dayId = response.id;
+
+      // If there's a photo, upload it and link it to the day
+      if (formData.photo) {
+        const uploadedPhoto = await photosApi.upload(formData.photo, {
+          caption: formData.title || 'Day together',
+          location: '',
+          taken_date: formData.date,
+        });
+        await daysApi.addPhoto(dayId, uploadedPhoto.id);
+      }
+
       setShowForm(false);
       setFormData({
         date: '',
